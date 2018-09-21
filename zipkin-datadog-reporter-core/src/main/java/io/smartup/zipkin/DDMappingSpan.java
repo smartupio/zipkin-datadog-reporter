@@ -176,6 +176,18 @@ public class DDMappingSpan {
 
     @Override
     public String toString() {
-        return delegateSpan.toString();
+        return "DDMappingSpan={" +
+          "startTime=" + getStartTime() +
+          ", durationNano=" + getDurationNano() +
+          ", serviceName=" + getServiceName() +
+          ", traceId=" + getTraceId() +
+          ", spanId=" + getSpanId() +
+          ", parentId=" + getParentId() +
+          ", resourceName='" + getResourceName() + "\'" +
+          ", operationName='" + getOperationName() + "\'" +
+          ", samplingPriority=" + getSamplingPriority() +
+          ", meta=" + getMeta() +
+          ", type=" + getType() +
+          ", delegateSpan=" + delegateSpan.toString();
     }
 }
