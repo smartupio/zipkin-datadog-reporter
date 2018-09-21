@@ -62,7 +62,9 @@ public class DDMappingSpan {
 
     @JsonGetter("duration")
     public long getDurationNano() {
-        return TimeUnit.MICROSECONDS.toNanos(delegateSpan.durationAsLong());
+        long duration = TimeUnit.MICROSECONDS.toNanos(delegateSpan.durationAsLong());
+
+        return duration == 0 ? 1 : duration;
     }
 
     @JsonGetter("service")
