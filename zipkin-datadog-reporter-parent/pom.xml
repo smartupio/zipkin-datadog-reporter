@@ -6,7 +6,7 @@
 
     <groupId>io.smartup.zipkin</groupId>
     <artifactId>zipkin-datadog-reporter-parent</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <packaging>pom</packaging>
 
     <name>Zipkin DataDog Reporter - Parent POM</name>

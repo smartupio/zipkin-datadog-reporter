@@ -7,7 +7,7 @@
     <groupId>io.smartup.zipkin</groupId>
     <artifactId>zipkin-datadog-reporter</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 
     <name>Aggregator of Zipkin DataDog Reporter</name>
     <description>Aggregator of Zipkin DataDog Reporter</description>
