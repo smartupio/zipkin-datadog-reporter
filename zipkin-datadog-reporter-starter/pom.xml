@@ -7,12 +7,12 @@
     <parent>
         <groupId>io.smartup.zipkin</groupId>
         <artifactId>zipkin-datadog-reporter-parent</artifactId>
-        <version>1.0.7</version>
+        <version>1.0.9-SNAPSHOT</version>
         <relativePath>../zipkin-datadog-reporter-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>zipkin-datadog-reporter-starter</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Zipkin DataDog Reporter Spring Boot Starter</name>
