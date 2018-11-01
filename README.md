@@ -16,7 +16,7 @@ Just include this dependency:
 <dependency>
 	<groupId>io.smartup.zipkin</groupId>
 	<artifactId>zipkin-datadog-reporter-starter</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.9</version>
 </dependency>
 ```
 
