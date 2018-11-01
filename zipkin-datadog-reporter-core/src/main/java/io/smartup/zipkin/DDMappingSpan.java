@@ -69,7 +69,16 @@ public class DDMappingSpan {
 
     @JsonGetter("service")
     public String getServiceName() {
-        return delegateSpan.localServiceName();
+      Map<String, String> tags = delegateSpan.tags();
+      if (tags.containsKey("redis.args")) {
+        return "redis";
+      }
+
+      if (tags.containsKey("sql.query")) {
+        return "sql";
+      }
+
+      return delegateSpan.localServiceName();
     }
 
     /**
@@ -104,9 +113,6 @@ public class DDMappingSpan {
     @JsonGetter("resource")
     public String getResourceName() {
         Map<String, String> tags = delegateSpan.tags();
-        if (tags.containsKey("http.route")) {
-            return tags.get("http.route");
-        }
         if (tags.containsKey("sql.query")) {
             return tags.get("sql.query");
         }
@@ -117,20 +123,56 @@ public class DDMappingSpan {
             // Using Opentracing?
             return tags.get("db.statement");
         }
+        if (tags.containsKey("redis.args")) {
+          return delegateSpan.name() + " " + tags.get("redis.args");
+        }
+        if (tags.containsKey("http.method")) {
+          return tags.get("http.method") + " " + tags.get("http.path");
+        }
+        if (tags.containsKey("channel")) {
+          return tags.get("channel");
+        }
         return delegateSpan.name();
     }
 
     @JsonGetter("name")
     public String getOperationName() {
+      Map<String, String> tags = delegateSpan.tags();
+      if (tags.containsKey("sql.query")) {
+          return "sql.query";
+        }
+        if (tags.containsKey("cassandra.query")) {
+          return "cassandra.query";
+        }
+        if (tags.containsKey("db.statement")) {
+          // Using Opentracing?
+          return tags.get("db.statement");
+        }
+        if (tags.containsKey("redis.args")) {
+          return "redis.query";
+        }
+        if (tags.containsKey("http.method")) {
+          if (delegateSpan.kind().equals(Span.Kind.SERVER)) {
+            return "servlet.request";
+          } else if (delegateSpan.kind().equals(Span.Kind.CLIENT)) {
+            return "http.request";
+          }
+        }
+        if (tags.containsKey("channel")) {
+          if (delegateSpan.kind().equals(Span.Kind.CONSUMER)) {
+            return "channel.receive";
+          } else if (delegateSpan.kind().equals(Span.Kind.PRODUCER)){
+            return "channel.send";
+          }
+        }
         // DataDog does not support trace names without alphanumerical characters
-
-        return getType() + " " + delegateSpan.name();
+        return delegateSpan.name();
     }
 
     @JsonGetter("sampling_priority")
     @JsonInclude(Include.NON_NULL)
     public Integer getSamplingPriority() {
-        return Boolean.TRUE.equals(delegateSpan.debug()) ? 1 : 0;
+        return Boolean.TRUE.equals(delegateSpan.debug()) ? 2 : 1;
     }
 
     @JsonGetter
@@ -158,6 +200,9 @@ public class DDMappingSpan {
                 if (delegateSpan.tags().containsKey("http.path")
                         || delegateSpan.tags().containsKey("http.uri")) {
                     return "http";
+                }
+                if (delegateSpan.tags().containsKey("redis.args")) {
+                  return "redis";
                 }
                 break;
             case SERVER:
