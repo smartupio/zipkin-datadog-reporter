@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DatadogReporter implements Reporter<Span>, Flushable, Closeable {
     public static final long TIMEOUT_DELAY = TimeUnit.SECONDS.toNanos(30);
     public static final long COMPLETION_DELAY = TimeUnit.SECONDS.toNanos(1);
-    public static final long FLUSH_DELAY = TimeUnit.SECONDS.toMillis(1);
 
     private final Queue<List<DDMappingSpan>> reportingTraces;
+    private final long messageTimeout;
     private final Map<String, PendingTrace> pendingTraces = new ConcurrentHashMap<>();
 
     private final AtomicBoolean running = new AtomicBoolean(false);
@@ -33,20 +33,13 @@ public class DatadogReporter implements Reporter<Span>, Flushable, Closeable {
     private volatile Thread flushingThread;
 
     /**
-     * Report traces to the Datadog Agent at the default location (localhost:8126).
-     */
-    public DatadogReporter() {
-        this(DDApi.DEFAULT_HOSTNAME, DDApi.DEFAULT_PORT, new LinkedBlockingQueue<>());
-    }
-
-    /**
      * Report traces to the configured Datadog Agent.
      *
      * @param host (See DDApi.DEFAULT_HOSTNAME)
      * @param port (See DDApi.DEFAULT_PORT)
      */
-    public DatadogReporter(String host, int port) {
-        this(host, port, new LinkedBlockingQueue<>());
+    public DatadogReporter(String host, int port, int messageTimeout) {
+        this(host, port, messageTimeout, new LinkedBlockingQueue<>());
     }
 
     /**
@@ -56,11 +49,13 @@ public class DatadogReporter implements Reporter<Span>, Flushable, Closeable {
      */
     public DatadogReporter(Queue<List<DDMappingSpan>> reportedTraces) {
         this.reportingTraces = reportedTraces;
-        ddApi = null;
+        this.ddApi = null;
+        this.messageTimeout = TimeUnit.SECONDS.toNanos(1);
     }
 
-    private DatadogReporter(String host, int port, Queue<List<DDMappingSpan>> reportingTraces) {
+    private DatadogReporter(String host, int port, int messageTimeout, Queue<List<DDMappingSpan>> reportingTraces) {
         this.reportingTraces = reportingTraces;
+        this.messageTimeout = TimeUnit.SECONDS.toNanos(messageTimeout);
         ddApi = new DDApi(host, port);
     }
 
@@ -129,7 +124,7 @@ public class DatadogReporter implements Reporter<Span>, Flushable, Closeable {
         while (running.get()) {
             try {
                 flush();
-                Thread.sleep(FLUSH_DELAY);
+                Thread.sleep(messageTimeout);
             } catch (InterruptedException e) {
             }
         }

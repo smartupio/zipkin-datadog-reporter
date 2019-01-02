@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
  * The API pointing to a DD agent
  */
 class DDApi {
-    static final String DEFAULT_HOSTNAME = "localhost";
-    static final int DEFAULT_PORT = 8126;
     static final String JAVA_VERSION = System.getProperty("java.version", "unknown");
     static final String JAVA_VM_NAME = System.getProperty("java.vm.name", "unknown");
     private static final Logger log = LoggerFactory.getLogger(DDApi.class);
